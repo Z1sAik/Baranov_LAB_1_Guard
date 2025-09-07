@@ -3,7 +3,7 @@
 #include <fstream>
 #include <locale>
 #include <windows.h>
-
+#include <codecvt>
 using namespace std;
 
 wchar_t vizner(wchar_t symbol, wchar_t key, bool decrypt) {
@@ -57,30 +57,28 @@ wchar_t vizner(wchar_t symbol, wchar_t key, bool decrypt) {
 
 void encryptDecryptFile(bool decrypt) {
 
-	cout << "Введите ключевое слово:" << endl;
-	string key;
-	cin.clear();
-	getline(cin, key);
-	if (key.empty()) {
-		cout << "Ключ не может быть пустым!" << endl;
-		return;
-	}
-
 	cout << "Введите название файла [без расширения], в котором размещен текст:" << endl;
-	string fileName;
-	cin.clear();
-	getline(cin, fileName);
+	wstring fileName;
+	getline(wcin, fileName);
 
-	wifstream fin(fileName + ".txt", ios::binary);
-	fin.imbue(locale(".1251"));
+	wifstream fin(fileName + L".txt");
+	fin.imbue(locale("en_US.UTF-8"));
 	if (!fin.is_open()) {
 		cout << "Такого файла не существует, введите имя корректно!" << endl;
 		return;
 	}
 
+	cout << "Введите ключевое слово:" << endl;
+	wstring key;
+	getline(wcin, key);
+	if (key.empty()) {
+		cout << "Ключ не может быть пустым!" << endl;
+		return;
+	}
+
 	string outFileName = decrypt ? "decryption.txt" : "encryption.txt";
-	wofstream fout(outFileName, ios::binary);
-	fout.imbue(locale(".1251"));
+	wofstream fout(outFileName);
+	fout.imbue(locale("en_US.UTF-8"));;
 
 	wchar_t ch;
 	int i = 0;
@@ -104,9 +102,11 @@ int main() {
 
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
+	locale::global(locale(".1251"));
+	wcin.imbue(locale());
+	wcout.imbue(locale());
 
 	while (true) {
-
 		cout << "///////Главное меню///////" << endl;
 		cout << "1) Зашифровать текст" << endl;
 		cout << "2) Дешифровать текст" << endl;
@@ -121,6 +121,7 @@ int main() {
 			continue;
 		}
 		cin.ignore(10000, '\n');
+
 		switch (x) {
 		case 1:
 			cout << "Зашифрование..." << endl;
