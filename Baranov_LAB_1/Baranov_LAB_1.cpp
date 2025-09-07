@@ -84,8 +84,13 @@ void encryptDecryptFile(bool decrypt) {
 	int i = 0;
 	while (fin.get(ch)) {
 		wchar_t newCh = vizner(ch, key[i % key.size()], decrypt);
+
 		fout.put(newCh);
-		i++;
+
+		if ((ch >= L'А' && ch <= L'Я') || (ch >= L'а' && ch <= L'я') || (ch >= L'A' && ch <= L'Z') || (ch >= L'a' && ch <= L'z'))
+		{
+			i++;
+		}
 	}
 
 	fin.close();
